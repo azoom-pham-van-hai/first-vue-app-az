@@ -12,6 +12,7 @@
     "ky": "^0.33.0",
     "pinia": "^2.0.28",
     "vue": "^3.2.45",
+    "vue-content-placeholders": "^0.2.1",
     "vue-router": "^4.1.6",
     "vuex": "^4.1.0"
   },

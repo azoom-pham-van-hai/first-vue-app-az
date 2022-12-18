@@ -1,19 +1,13 @@
 <template>
   <div class="post-item">
-    <p>{{ post.id }}. {{ post.title }}</p>
+    <p>
+      <strong>{{ post.id }}. </strong>{{ post.title }}
+    </p>
   </div>
 </template>
 
-<script>
-export default {
-  name: "PostItem",
-  props: {
-    post: {
-      type: Object,
-      required: true,
-    },
-  },
-};
+<script setup>
+const props = defineProps(["post"]);
 </script>
 
 <style scoped>
@@ -21,9 +15,9 @@ export default {
   background: #fefcf3;
   box-shadow: 0 0 2px #dba39a;
   border-radius: 5px;
-  margin: 10px;
   padding: 10px;
   text-align: left;
   cursor: pointer;
+  user-select: none;
 }
 </style>
