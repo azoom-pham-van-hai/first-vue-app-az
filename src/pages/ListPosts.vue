@@ -3,8 +3,8 @@
     <button type="button" @click="createPost" class="button">
       Create post
     </button>
-    <p v-if="posts.length === 0">Loading</p>
-    <div v-else>
+    <p v-if="posts.length === 0" class="loading">Loading posts...</p>
+    <div v-else class="list">
       <post-item
         v-for="post in posts"
         :key="post.id"
@@ -12,40 +12,80 @@
         @click="goToPostDetail(post.id)"
       ></post-item>
     </div>
+    <app-pagination :total="total" :set-page="setPage"></app-pagination>
   </div>
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from "vue";
+import AppPagination from "../components/app/Pagination.vue";
+
+import { onBeforeMount, watch } from "vue";
+import { storeToRefs } from "pinia";
+import { useRouter } from "vue-router";
+
 import { kyApi } from "../config/api";
 import PostItem from "../components/PostItem.vue";
 import { usePostStore } from "../store/posts";
 
-const { posts, total, setPosts } = usePostStore();
+const store = usePostStore();
+const router = useRouter();
 
-const params = ref({
-  page: 0,
-  limit: 10,
-});
+const { posts, total, currentPage, limit } = storeToRefs(store);
 
-onBeforeMount(async () => {
-  const resPosts = await kyApi
-    .get("posts", {
+const { setPosts, setTotal, setPage, setLimit } = store;
+
+const handleGetPosts = async () => {
+  try {
+    const response = await kyApi.get("posts", {
       searchParams: {
-        _start: params.value.page,
-        _limit: params.value.limit,
+        _page: currentPage.value,
+        _limit: limit.value,
       },
-    })
-    .json();
+    });
 
-  setPosts(resPosts);
-});
+    const resTotal = response.headers.get("x-total-count");
+    setTotal(resTotal);
+    const result = await response.json();
+    setPosts(result);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+onBeforeMount(handleGetPosts);
+
+watch([currentPage], handleGetPosts);
+
+const goToPostDetail = (postId) => {
+  router.push(`posts/${postId}`);
+};
 </script>
 
 <style scoped lang="scss">
 .list-posts {
-  .button {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  margin: auto;
+
+  > .button {
     background-color: #dba39a;
+    font-size: 20px;
+  }
+
+  > .loading {
+    font-size: 28px;
+  }
+
+  > .list {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  > .app-pagination {
+    margin-top: 20px;
   }
 }
 </style>

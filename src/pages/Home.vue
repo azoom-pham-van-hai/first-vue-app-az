@@ -1,6 +1,8 @@
 <template>
   <div>
-    <p>This is home</p>
+    <router-link to="/posts"
+      ><button class="button">Go to posts</button></router-link
+    >
   </div>
 </template>
 
@@ -10,4 +12,9 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped lang="scss">
+.button {
+  background-color: #dba39a;
+  outline: none;
+}
+</style>
